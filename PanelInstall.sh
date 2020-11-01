@@ -22,7 +22,7 @@
 ##########################################################################
 
 # This defines the version of the script. It allows me to easily keep track of it when I'm testing the script from GitHub
-Script_Version=0.01
+Script_Version=0.02
 
 # Some colours that are used throughout the script
 LIGHT_RED='\033[1;31m'
@@ -43,6 +43,10 @@ PublicIP="$(wget http://ipecho.net/plain -O - -q ; echo)"
 pass=""
 FQDN=""
 DomainIP=""
+
+# Initial Checks to make sure the script can run
+[[ $EUID -ne 0 ]] && echo -e ""$RED"Error: Please run this script with root privileges (sudo)"$NoColor"" && exit 1
+[[ -z $(echo $os_version | grep 'Ubuntu 18') ]] && echo -e ""$RED"Error: This script must be ran with Ubuntu 18.04"$NoColor"" && exit 1
 
 # This is the OpeningMessage, it is displayed after the FQDN has been received and shows the user all the information that will need throughout the install
 OpeningMessage() {
@@ -121,11 +125,6 @@ Install() {
   ## Everything
 }
 
-
-# Initial Checks to make sure the script can run
-[[ $EUID -ne 0 ]] && echo -e ""$RED"Error: Please run this script with root privileges (sudo)"$NoColor"" && exit 1
-[[ -z $(echo $os_version | grep 'Ubuntu 18') ]] && echo -e ""$RED"Error: This script must be ran with Ubuntu 18.04"$NoColor"" && exit 1
-
 main() {
   clear
   TestingDependencies
@@ -139,6 +138,8 @@ main() {
       [[ -z "$pass" ]] && echo -e "\n"$RED"Error: Password cannot be empty"$NoColor""
       [[ ! $pass == $passConfirm ]] && echo -e ""$RED"Error: Password do not match"$NoColor"\n"
     done
+  
+  clear
   
   DomainTester
   OpeningMessage
